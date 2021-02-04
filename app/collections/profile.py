@@ -8,13 +8,16 @@ class Profiles(me.Document):
     last_name = me.StringField()
     age = me.IntField()
     personal_id = me.StringField(unique=True)
-    owners = me.ReferenceField(document_type=ClientType, reverse_delete_rule=me.CASCADE)
+    income = me.StringField()
+    client_type = me.ReferenceField(document_type=ClientType, reverse_delete_rule=me.CASCADE)
 
-    def format(self) -> dict:
+    def format(self):
         return {
             'name': self.name,
             'last_name': self.last_name,
             'age': self.age,
             'personal_id': self.personal_id,
+            'income': self.income,
+            'client_type': self.client_type,
         }
 

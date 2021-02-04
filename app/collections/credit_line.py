@@ -8,7 +8,7 @@ class CreditLines(me.Document):
     credit_line_type = me.StringField()
     financing_time = me.StringField()
 
-    def format(self) -> dict:
+    def format(self):
         return {
             'budget': self.budget,
             'initial_payment': self.initial_payment,
@@ -16,3 +16,6 @@ class CreditLines(me.Document):
             'credit_line_type': self.credit_line_type,
             'financing_time': self.financing_time,
         }
+
+
+

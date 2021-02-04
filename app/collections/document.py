@@ -7,6 +7,6 @@ class Documents(me.Document):
 
     def format(self):
         return {
-            'budget': self.name,
-            'initial_payment': self.active,
+            'name': self.name,
+            'active': self.active,
         }

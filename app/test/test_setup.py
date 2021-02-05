@@ -1,0 +1,25 @@
+import unittest
+
+import pymongo
+
+from app import create_app
+from app.utils.contants import *
+
+
+class SetupTestDB(unittest.TestCase):
+
+    my_client = pymongo.MongoClient("mongodb://localhost:27017/")
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        db_list = cls.my_client.list_database_names()
+        if TEST_DATABASE_NAME in db_list:
+            cls.my_client.drop_database(TEST_DATABASE_NAME)
+        test_db = cls.my_client[TEST_DATABASE_NAME]
+        app = create_app(testing=True)
+
+        cls.app_client = app.test_client()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.my_client.drop_database(TEST_DATABASE_NAME)

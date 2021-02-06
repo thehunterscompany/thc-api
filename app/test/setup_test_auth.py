@@ -15,7 +15,7 @@ class SetupTestDB(unittest.TestCase):
         db_list = cls.my_client.list_database_names()
         if TEST_DATABASE_NAME in db_list:
             cls.my_client.drop_database(TEST_DATABASE_NAME)
-        test_db = cls.my_client[TEST_DATABASE_NAME]
+        cls.test_db = cls.my_client[TEST_DATABASE_NAME]
         app = create_app(testing=True)
 
         cls.app_client = app.test_client()

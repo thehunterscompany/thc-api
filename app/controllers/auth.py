@@ -50,6 +50,7 @@ def register():
         client = Clients(email=email, password=password, role=role, profile=profiles, credit_line=credit_line,
                          number_owners=len(profiles), referred_by='me')
         client.save()
+
         return jsonify({'success': True, 'result': client.format()})
 
     except NotUniqueError:
@@ -65,32 +66,33 @@ def login():
 def post_roles():
     if request.content_type == 'application/json':
         data = request.get_json()
-        role = Roles(type=data['type'], description=data['description'])
-        try:
-            role.save()
-        except NotUniqueError:
-            abort(422)
-
-        return jsonify({'success': True, 'result': role.format()})
-
-    role_type = request.form['type']
-    description = request.form['description']
-    role = Roles(type=role_type, description=description)
+    else:
+        data = request.form
     try:
+        role = Roles(type=data['type'], description=data['description'])
         role.save()
+        return jsonify({'result': role.format()})
+
     except NotUniqueError:
         abort(422)
 
-    return jsonify({'success': True, 'result': role.format()})
+    except Exception:
+        abort(404)
 
 
 @bp.route('/client_types', methods=['POST'])
 def post_client_type():
-    employment_type = request.form['employment_type']
-    client_type = ClientType(employment_type=employment_type, documents=None)
+    if request.content_type == 'application/json':
+        data = request.get_json()
+    else:
+        data = request.form
     try:
+        client_type = ClientType(employment_type=data['employment_type'], documents=None)
         client_type.save()
+        return jsonify({'result': client_type.format()})
+
     except NotUniqueError:
         abort(422)
 
-    return jsonify({'success': True, 'result': client_type.format()})
+    except Exception:
+        abort(404)

@@ -1,6 +1,6 @@
 import mongoengine as me
 
-from app.collections.client_type import ClientType
+from app.collections.client_type import ClientTypes
 
 
 class Profiles(me.Document):
@@ -9,7 +9,7 @@ class Profiles(me.Document):
     age = me.IntField()
     personal_id = me.StringField(unique=True)
     income = me.StringField()
-    client_type = me.ReferenceField(document_type=ClientType, reverse_delete_rule=me.CASCADE)
+    client_type = me.ReferenceField(document_type=ClientTypes, reverse_delete_rule=me.CASCADE)
 
     def format(self):
         return {

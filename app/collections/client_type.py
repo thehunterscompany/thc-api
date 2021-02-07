@@ -3,7 +3,7 @@ import mongoengine as me
 from app.collections.document import Documents
 
 
-class ClientType(me.Document):
+class ClientTypes(me.Document):
     employment_type = me.StringField(unique=True)
     documents = me.ListField(me.ReferenceField(Documents, reverse_delete_rule=me.NULLIFY, null=True))
 

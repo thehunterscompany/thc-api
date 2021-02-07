@@ -13,10 +13,8 @@ class Users(me.Document):
     meta = {'allow_inheritance': True}
 
     def format(self):
-        user_dict = {
+        return {
             'email': self.email,
             'password': self.password,
             'role_type': self.role_type
         }
-
-        return json.dumps(user_dict)

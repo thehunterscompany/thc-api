@@ -1,6 +1,6 @@
 import mongoengine as me
 
-from app.collections.client_type import ClientType
+from app.collections.client_type import ClientTypes
 from app.collections.credit_line import CreditLines
 from app.collections.user import Users
 from app.collections.profile import Profiles

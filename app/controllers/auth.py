@@ -1,7 +1,8 @@
+import ast
 from flask import Blueprint, request, abort, jsonify
 from mongoengine import NotUniqueError
 
-from app.collections.client_type import ClientType
+from app.collections.client_type import ClientTypes
 from app.collections.credit_line import CreditLines
 from app.collections.profile import Profiles
 from app.collections.role import Roles
@@ -12,49 +13,109 @@ bp = Blueprint('auth', __name__, url_prefix='/')
 
 @bp.route('/register', methods=['POST'])
 def register():
-    email = request.form['email']
-    password = request.form['password']
-    role_type = request.form['role_type']
-    role = Roles.objects.get(type=role_type)
-    names = request.form['name']
-    last_names = request.form['last_name']
-    ages = request.form['age']
-    personal_ids = request.form['personal_id']
-    incomes = request.form['income']
-    employment_types = request.form['employment_type']
+    """
+    Register User
+    """
+    if request.content_type == 'application/json':
+        data = request.get_json()
+    else:
+        data = request.form
 
     profiles = []
-    # Profiles
-    for i in range(len(names)):
-        profiles.append(Profiles(name=names[i], last_name=last_names[i], age=ages[i], personal_id=personal_ids[i],
-                        income=incomes[i],
-                        client_type=ClientType(employment_type=employment_types[i], document=None)))
-    for profile in profiles:
-        try:
-            profile.save()
-        except NotUniqueError:
-            abort(422)
-
-    # Credit Line
-    budget = request.form['budget']
-    initial_payment = request.form['initial_payment']
-    financing_value = request.form['financing_value']
-    credit_line_type = request.form['credit_line_type']
-    financing_time = request.form['financing_time']
-
-    credit_line = CreditLines(budget=budget, initial_payment=initial_payment, financing_value=financing_value,
-                              credit_line_type=credit_line_type, financing_time=financing_time)
-    credit_line.save()
+    client, credit_line = None, None
 
     try:
-        client = Clients(email=email, password=password, role=role, profile=profiles, credit_line=credit_line,
+        # Profiles
+        names = ast.literal_eval(data['name'])
+        last_names = ast.literal_eval(data['last_name'])
+        ages = ast.literal_eval(data['age'])
+        personal_ids = ast.literal_eval(data['personal_id'])
+        incomes = ast.literal_eval(data['income'])
+        employment_types = ast.literal_eval(data['employment_type'])
+
+        client_type = ClientTypes.objects.get(
+            employment_type=employment_types[0]
+        )
+
+        # Profiles
+        for i in range(len(names)):
+            if i > 0:
+                if employment_types[i] != employment_types[i-1]:
+
+                    client_type = ClientTypes.objects.get(
+                        employment_type=employment_types[i]
+                    )
+
+            profile = Profiles(name=names[i], last_name=last_names[i],
+                               age=ages[i],
+                               personal_id=personal_ids[i],
+                               income=incomes[i], client_type=client_type)
+
+            profiles.append(profile)
+        for profile in profiles:
+            profile.save()
+
+    except NotUniqueError:
+        try:
+            for profile in profiles:
+                profile.delete()
+        except:
+            pass
+        abort(422)
+
+    except Exception:
+        try:
+            for profile in profiles:
+                profile.delete()
+        except:
+            pass
+        abort(400)
+
+    try:
+        # Credit Line
+        budget = data['budget']
+        initial_payment = data['initial_payment']
+        financing_value = data['financing_value']
+        credit_line_type = data['credit_line_type']
+        financing_time = data['financing_time']
+
+        credit_line = CreditLines(budget=budget,
+                                  initial_payment=initial_payment,
+                                  financing_value=financing_value,
+                                  credit_line_type=credit_line_type,
+                                  financing_time=financing_time)
+        credit_line.save()
+
+    except Exception:
+        for profile in profiles:
+            profile.delete()
+        abort(400)
+
+    client = None
+    try:
+        email = data['email']
+        password = data['password']
+        role_type = data['role_type']
+        role = Roles.objects.get(type=role_type)
+        client = Clients(email=email, password=password, role_type=role,
+                         profile=profiles, credit_line=credit_line,
                          number_owners=len(profiles), referred_by='me')
         client.save()
 
-        return jsonify({'success': True, 'result': client.format()})
-
     except NotUniqueError:
+        for profile in profiles:
+            profile.delete()
+        credit_line.delete()
         abort(422)
+
+    except Exception:
+
+        for profile in profiles:
+            profile.delete()
+        credit_line.delete()
+        abort(400)
+
+    return jsonify({'success': True, 'result': client.format()})
 
 
 @bp.route('/login', methods=['POST'])
@@ -64,6 +125,9 @@ def login():
 
 @bp.route('/roles', methods=['POST'])
 def post_roles():
+    """
+    Post New Role
+    """
     if request.content_type == 'application/json':
         data = request.get_json()
     else:
@@ -77,17 +141,21 @@ def post_roles():
         abort(422)
 
     except Exception:
-        abort(404)
+        abort(400)
 
 
 @bp.route('/client_types', methods=['POST'])
 def post_client_type():
+    """
+    Post New Client Type
+    """
     if request.content_type == 'application/json':
         data = request.get_json()
     else:
         data = request.form
     try:
-        client_type = ClientType(employment_type=data['employment_type'], documents=None)
+        client_type = ClientTypes(employment_type=data['employment_type'],
+                                  documents=None)
         client_type.save()
         return jsonify({'result': client_type.format()})
 

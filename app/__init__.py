@@ -28,15 +28,25 @@ def create_app(testing=False):
         return jsonify('The Hunters Company')
 
     # Error Handling
+    @app.errorhandler(400)
+    def page_not_found(e):
+        return jsonify({'result': "bad request",
+                        }), 400
+
     @app.errorhandler(404)
-    def page_not_found(error):
-        return jsonify({'result': "not found"
-        }), 404
+    def page_not_found(e):
+        return jsonify({'result': "not found",
+                        }), 404
+
+    @app.errorhandler(405)
+    def unprocessable(e):
+        return jsonify({'result': "method not allowed"
+                        }), 405
 
     @app.errorhandler(422)
-    def unprocessable(error):
+    def unprocessable(e):
         return jsonify({'result': "unprocessable"
-        }), 422
+                        }), 422
 
     from .controllers import auth
 

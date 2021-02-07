@@ -1,8 +1,8 @@
 import json
-from app.test.setup_test_db import SetupTestDB
+from app.test.utils.setup_utils_test import UtilsSetup
 
 
-class TestCase(SetupTestDB):
+class TestCase(UtilsSetup):
 
     def tearDown(self):
         active_col = self.test_db.list_collection_names()

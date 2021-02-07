@@ -2,7 +2,7 @@ import json
 from app.test.auth.setup_test_auth import DefaultSetup
 
 
-class TestCase(DefaultSetup):
+class AuthTestCase(DefaultSetup):
 
     def tearDown(self):
         active_col = self.test_db.list_collection_names()

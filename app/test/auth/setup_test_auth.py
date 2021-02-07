@@ -1,16 +1,15 @@
-import pymongo
+import unittest
 
-from app import create_app
 from app.test.setup_test_db import SetupTestDB
 from app.utils.contants import *
 
 
-class DefaultSetup(SetupTestDB):
+class DefaultSetup(SetupTestDB, unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
         # Setup Data
-        cls.test_db = cls.my_client[TEST_DATABASE_NAME]
+        cls.test_db, cls.app_client = cls.start_db()
         roles_col = cls.test_db["roles"]
         roles_data = [{"type": "admin", "description": ""},
                       {"type": "client", "description": ""},
@@ -29,4 +28,4 @@ class DefaultSetup(SetupTestDB):
 
     @classmethod
     def tearDownClass(cls) -> None:
-        cls.my_client.drop_database(TEST_DATABASE_NAME)
+        cls.close_db()

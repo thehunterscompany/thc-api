@@ -92,7 +92,7 @@ class AuthTestCase(DefaultSetup):
                    'name': "['Armando',  'Jose']",
                    'last_name': "['Zubillaga', 'Prado']",
                    'age': "[25, 28]",
-                   'personal_id': "['1115341', '111223']",
+                   'personal_id': "['1115341', '1112523']",
                    'income': "['111111', '2323342']",
                    'employment_type': "['employee', 'self-employed']",
                    'budget': '124324',

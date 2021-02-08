@@ -1,7 +1,7 @@
 import unittest
 
 from app.test.setup_test_db import SetupTestDB
-from app.utils.contants import *
+from app.utils.constants import *
 
 
 class DefaultSetup(SetupTestDB, unittest.TestCase):

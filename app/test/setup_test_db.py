@@ -1,7 +1,7 @@
 import pymongo
 
 from app import create_app
-from app.utils.contants import *
+from app.utils.constants import *
 
 
 class SetupTestDB:

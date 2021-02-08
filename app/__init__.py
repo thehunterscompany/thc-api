@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_mongoengine import MongoEngine
 
-from .utils.contants import *
+from .utils.constants import *
 
 
 def setup_db(app, db_name=DATABASE_NAME):

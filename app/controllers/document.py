@@ -3,6 +3,7 @@ from ..utils import response
 
 bp = Blueprint('document', __name__, url_prefix='/')
 
+
 @bp.route('/documents', methods=['GET'])
 def table():
     return jsonify(response('get all or specific document with pagination'))

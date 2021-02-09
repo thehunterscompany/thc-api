@@ -3,6 +3,7 @@ from flask_mongoengine import MongoEngine
 from .utils.constants import *
 from .utils.error_handler import error_handler
 
+
 def setup_db(app, db_name=DATABASE_NAME):
     app.config['MONGODB_SETTINGS'] = {
         'db': db_name,
@@ -27,9 +28,11 @@ def create_app(testing=False):
 
     error_handler(app)
 
-    from .controllers import auth, document
+    from .controllers import auth, document, role, client_type
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(document.bp)
+    app.register_blueprint(role.bp)
+    app.register_blueprint(client_type.bp)
 
     return app

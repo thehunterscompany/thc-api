@@ -1,6 +1,6 @@
 from flask import Blueprint, request, abort, jsonify
 from mongoengine.queryset import NotUniqueError
-from ..utils import response, parser_one_object
+from ..utils import response, parser_one_object, rewrite_abort
 from ..collections import Documents
 
 bp = Blueprint('document', __name__, url_prefix='/')
@@ -19,22 +19,15 @@ def get():
 @bp.route('/documents', methods=['POST'])
 def save():
     try:
-        document = {
-            'name': 'CI',
-            'active': True
-        }
-
+        document = request.get_json()
         instance = Documents(**document).save()
 
         return jsonify(response(parser_one_object(instance)))
 
     except Exception as err:
-        # return jsonify(str(err))
-        pass
-
+        rewrite_abort(500, err)
     except NotUniqueError:
-        # abort(400)
-        pass
+        abort(400)
 
 
 @bp.route('/documents/<id>', methods=['UPDATE'])
@@ -45,4 +38,3 @@ def update():
 @bp.route('/documents/<id>', methods=['DELETE'])
 def delete():
     return jsonify(response('delete document'))
-

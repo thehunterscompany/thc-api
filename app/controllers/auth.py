@@ -138,11 +138,6 @@ def login():
 
         if not user.verified:
             if data['password'] == decrypt_data(user.password):
-                return 'success'
-            return jsonify({'result': user.to_json()})
+                return jsonify(response(generate_jwt(user)))
     except Exception:
         abort(400)
-
-
-
-    return 'login'

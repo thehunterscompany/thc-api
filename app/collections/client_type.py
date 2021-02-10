@@ -1,6 +1,6 @@
 import mongoengine as me
 
-from app.collections.document import Documents
+from app.collections.documents import Documents
 
 
 class ClientTypes(me.Document):

@@ -1,7 +1,9 @@
 from flask import Blueprint, request, abort, jsonify
+from marshmallow import ValidationError
 from mongoengine.queryset import NotUniqueError
 from ..utils import response, parser_one_object, rewrite_abort
 from ..collections import Documents
+from ..schemas.document_schema import SaveDocumentInput
 
 bp = Blueprint('document', __name__, url_prefix='/')
 
@@ -19,15 +21,18 @@ def get():
 @bp.route('/documents', methods=['POST'])
 def save():
     try:
-        document = request.get_json()
+        schema = SaveDocumentInput()
+        document = schema.load(request.json)
         instance = Documents(**document).save()
 
         return jsonify(response(parser_one_object(instance)))
 
-    except Exception as err:
-        rewrite_abort(500, err)
+    except ValidationError as validation_err:
+        rewrite_abort(400, validation_err)
     except NotUniqueError:
         abort(400)
+    except Exception as err:
+        rewrite_abort(500, err)
 
 
 @bp.route('/documents/<id>', methods=['UPDATE'])

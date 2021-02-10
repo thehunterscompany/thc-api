@@ -5,6 +5,7 @@ from ..collections import Documents
 
 bp = Blueprint('document', __name__, url_prefix='/')
 
+
 @bp.route('/documents', methods=['GET'])
 def table():
     return jsonify(response('get all or specific document with pagination'))

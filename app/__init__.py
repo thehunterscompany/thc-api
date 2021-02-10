@@ -19,9 +19,11 @@ def create_app(testing=False):
 
     error_handler(app)
 
-    from .controllers import auth, document
+    from .controllers import auth, document, role, client_type
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(document.bp)
+    app.register_blueprint(role.bp)
+    app.register_blueprint(client_type.bp)
 
     return app

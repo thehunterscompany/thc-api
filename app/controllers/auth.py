@@ -7,6 +7,9 @@ from app.collections.credit_line import CreditLines
 from app.collections.profile import Profiles
 from app.collections.role import Roles
 from app.collections.client import Clients
+from app.collections.user import Users
+from app.utils import response
+from app.utils.auth.password_jwt import *
 
 bp = Blueprint('auth', __name__, url_prefix='/')
 
@@ -36,7 +39,6 @@ def register():
         client_type = ClientTypes.objects.get(
             employment_type=employment_types[0]
         )
-
         # Profiles
         for i in range(len(names)):
             if i > 0:
@@ -94,7 +96,7 @@ def register():
     client = None
     try:
         email = data['email']
-        password = data['password']
+        password = encrypt_data(data, 'password')
         role_type = data['role_type']
         role = Roles.objects.get(type=role_type)
         client = Clients(email=email, password=password, role_type=role,
@@ -115,9 +117,32 @@ def register():
         credit_line.delete()
         abort(400)
 
-    return jsonify({'success': True, 'result': client.format()})
+    return jsonify(response(client.to_json()))
 
 
 @bp.route('/login', methods=['POST'])
 def login():
+    """
+    User login
+    """
+
+    if request.content_type == 'application/json':
+        data = request.get_json()
+    else:
+        data = request.form
+
+    try:
+        user = Users.objects.get(
+            email=data['email']
+        )
+
+        if not user.verified:
+            if data['password'] == decrypt_data(user.password):
+                return 'success'
+            return jsonify({'result': user.to_json()})
+    except Exception:
+        abort(400)
+
+
+
     return 'login'

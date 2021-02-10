@@ -20,5 +20,6 @@ class Clients(Users):
             'profile': self.profile,
             'credit_line': self.credit_line,
             'number_owners': self.number_owners,
-            'referred_by': self.referred_by
+            'referred_by': self.referred_by,
+            'verified': self.verified
         }

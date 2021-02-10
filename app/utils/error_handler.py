@@ -1,6 +1,7 @@
 from flask import jsonify
 from .common import response
 
+
 def error_handler(app):
     @app.errorhandler(400)
     def page_not_found(e):

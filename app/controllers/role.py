@@ -19,7 +19,7 @@ def post_roles():
     try:
         role = Roles(type=data['type'], description=data['description'])
         role.save()
-        return jsonify({'result': role.format()})
+        return jsonify(response(role.to_json()))
 
     except NotUniqueError:
         abort(422)

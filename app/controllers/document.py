@@ -7,6 +7,7 @@ from ..utils import *
 
 bp = Blueprint('document', __name__, url_prefix='/')
 
+
 @bp.route('/documents', methods=['GET'])
 def table():
     try:

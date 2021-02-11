@@ -12,34 +12,35 @@ def pagination(page, per_page, sort_results):
                     {
                         '$group': {
                             '_id': None,
-                            'count': { '$sum': 1 }
+                            'count': {'$sum': 1}
                         }
                     }
                 ],
                 'results': [
-                    { '$sort': sort_results },
-                    { '$skip': skip },
-                    { '$limit': limit }
+                    {'$sort': sort_results},
+                    {'$skip': skip},
+                    {'$limit': limit}
                 ]
             }
         },
-        { '$unwind': '$total' },
+        {'$unwind': '$total'},
         {
             '$project': {
                 'items': '$results',
-                'page': { '$toInt': page },
-                'per_page': { '$toInt': per_page },
+                'page': {'$toInt': page},
+                'per_page': {'$toInt': per_page},
                 'total_items': '$total.count',
-                'num_pages': { '$toInt': { '$ceil': { '$divide': ['$total.count', per_page] } } }
+                'num_pages': {'$toInt': {'$ceil': {'$divide': ['$total.count', per_page]}}}
             }
         }
     ]
 
     return paginate
 
+
 def default_paginate_schema(schema, page, per_page):
     all_schema = list(schema)
-    lenght_schema = len(all_schema)
+    length_schema = len(all_schema)
 
     default_schema = {
         'items': [],
@@ -49,4 +50,4 @@ def default_paginate_schema(schema, page, per_page):
         'num_pages': 1
     }
 
-    return all_schema[0] if lenght_schema else default_schema
+    return all_schema[0] if length_schema else default_schema

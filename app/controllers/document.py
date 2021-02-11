@@ -36,7 +36,7 @@ def table():
         pipeline = pipeline + pagination(page, per_page, {'name': 1})
         documents = Documents.objects().aggregate(pipeline)
 
-        return jsonify(response(default_paginate_schema(documents, page, per_page)))
+        return response(default_paginate_schema(documents, page, per_page))
 
     except Exception as err:
         rewrite_abort(500, err)
@@ -48,7 +48,7 @@ def get(id):
         document = Documents.objects.get(id=id)
         document = parser_one_object(document)
 
-        return jsonify(response(document))
+        return response(document)
 
     except Documents.DoesNotExist as not_found:
         rewrite_abort(404, not_found)
@@ -63,7 +63,7 @@ def save():
         document = schema.load(request.json)
         instance = Documents(**document).save()
 
-        return jsonify(response(parser_one_object(instance))), 201
+        return response(parser_one_object(instance)), 201
 
     except ValidationError as validation_err:
         rewrite_abort(400, validation_err)
@@ -80,7 +80,7 @@ def update(id):
         document = schema.load(request.json)
         instance = update_or_create(Documents, { 'id': id }, document)
 
-        return jsonify(response(parser_one_object(instance)))
+        return response(parser_one_object(instance))
 
     except ValidationError as validation_err:
         rewrite_abort(400, validation_err)
@@ -96,7 +96,7 @@ def delete(id):
         document = Documents.objects.get(id=id)
         document.delete()
 
-        return jsonify(response()), 204
+        return response(), 204
 
     except Documents.DoesNotExist as not_found:
         rewrite_abort(404, not_found)

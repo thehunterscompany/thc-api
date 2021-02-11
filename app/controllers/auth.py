@@ -1,5 +1,6 @@
 import ast
-from flask import Blueprint, request, abort, jsonify
+from flask import Blueprint, request, jsonify
+from flask_mail import Message
 from mongoengine import NotUniqueError
 
 from app.collections.client_type import ClientTypes
@@ -8,7 +9,7 @@ from app.collections.profile import Profiles
 from app.collections.role import Roles
 from app.collections.client import Clients
 from app.collections.user import Users
-from app.utils import response
+from app.utils import response, rewrite_abort
 from app.utils.auth.password_jwt import *
 
 bp = Blueprint('auth', __name__, url_prefix='/')
@@ -57,21 +58,21 @@ def register():
         for profile in profiles:
             profile.save()
 
-    except NotUniqueError:
+    except NotUniqueError as err:
         try:
             for profile in profiles:
                 profile.delete()
-        except:
+        except Exception as err:
             pass
-        abort(422)
+        rewrite_abort(422, err)
 
-    except Exception:
+    except Exception as err:
         try:
             for profile in profiles:
                 profile.delete()
-        except:
+        except Exception as err:
             pass
-        abort(400)
+        rewrite_abort(400, err)
 
     try:
         # Credit Line
@@ -88,10 +89,10 @@ def register():
                                   financing_time=financing_time)
         credit_line.save()
 
-    except Exception:
+    except Exception as err:
         for profile in profiles:
             profile.delete()
-        abort(400)
+        rewrite_abort(400, err)
 
     client = None
     try:
@@ -104,18 +105,22 @@ def register():
                          number_owners=len(profiles), referred_by='me')
         client.save()
 
-    except NotUniqueError:
+    except NotUniqueError as err:
         for profile in profiles:
             profile.delete()
         credit_line.delete()
-        abort(422)
+        rewrite_abort(422, err)
 
-    except Exception:
+    except Exception as err:
 
         for profile in profiles:
             profile.delete()
         credit_line.delete()
-        abort(400)
+        rewrite_abort(400, err)
+
+    msg = Message('Hello', sender='yourId@gmail.com', recipients=['id1@gmail.com'])
+    msg.body = "Hello Flask message sent from Flask-Mail"
+    mail.send(msg)
 
     return jsonify(response(client.to_json()))
 
@@ -139,5 +144,9 @@ def login():
         if not user.verified:
             if data['password'] == decrypt_data(user.password):
                 return jsonify(response(generate_jwt(user)))
-    except Exception:
-        abort(400)
+            else:
+                err = 'Your password is incorrect.'
+                rewrite_abort(401, err)
+
+    except Exception as err:
+        rewrite_abort(422, err)

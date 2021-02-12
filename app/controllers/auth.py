@@ -1,6 +1,5 @@
 import ast
 from flask import Blueprint, request, jsonify
-from flask_mail import Message
 from mongoengine import NotUniqueError
 
 from app.collections.client_type import ClientTypes
@@ -11,6 +10,7 @@ from app.collections.client import Clients
 from app.collections.user import Users
 from app.utils import response, rewrite_abort
 from app.utils.auth.password_jwt import *
+from app.utils.config.email import send_mail
 
 bp = Blueprint('auth', __name__, url_prefix='/')
 
@@ -62,7 +62,7 @@ def register():
         try:
             for profile in profiles:
                 profile.delete()
-        except Exception as err:
+        except Exception:
             pass
         rewrite_abort(422, err)
 
@@ -70,7 +70,7 @@ def register():
         try:
             for profile in profiles:
                 profile.delete()
-        except Exception as err:
+        except Exception:
             pass
         rewrite_abort(400, err)
 
@@ -87,6 +87,7 @@ def register():
                                   financing_value=financing_value,
                                   credit_line_type=credit_line_type,
                                   financing_time=financing_time)
+
         credit_line.save()
 
     except Exception as err:
@@ -103,6 +104,9 @@ def register():
         client = Clients(email=email, password=password, role_type=role,
                          profile=profiles, credit_line=credit_line,
                          number_owners=len(profiles), referred_by='me')
+
+        send_mail()
+
         client.save()
 
     except NotUniqueError as err:
@@ -117,10 +121,6 @@ def register():
             profile.delete()
         credit_line.delete()
         rewrite_abort(400, err)
-
-    msg = Message('Hello', sender='yourId@gmail.com', recipients=['id1@gmail.com'])
-    msg.body = "Hello Flask message sent from Flask-Mail"
-    mail.send(msg)
 
     return jsonify(response(client.to_json()))
 

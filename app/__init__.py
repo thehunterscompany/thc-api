@@ -1,9 +1,9 @@
 from flask import Flask, jsonify
-from flask_mail import Mail
 from mongoengine import connect
 from .utils.config.email import setup_email
 from .utils.constants import *
 from .utils.error_handler import error_handler
+from .middlewares import ContentTypeMiddleware
 
 
 def setup_db(db_name=DATABASE_NAME):
@@ -13,6 +13,7 @@ def setup_db(db_name=DATABASE_NAME):
 def create_app(testing=False):
 
     app = Flask(__name__, instance_relative_config=True)
+
     setup_email(app)
     mail = Mail()
     mail.init_app(app)
@@ -29,6 +30,8 @@ def create_app(testing=False):
     error_handler(app)
 
     from .controllers import auth, document, role, client_type
+
+    app.wsgi_app = ContentTypeMiddleware(app.wsgi_app)
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(document.bp)

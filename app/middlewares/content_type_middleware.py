@@ -2,6 +2,7 @@ from werkzeug.wrappers import Request, Response
 from ..utils import response
 import json
 
+
 class ContentTypeMiddleware(object):
     def __init__(self, app):
         self.app = app

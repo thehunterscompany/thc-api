@@ -4,11 +4,11 @@ from .common import response
 
 def error_handler(app):
     @app.errorhandler(400)
-    def page_not_found(e):
+    def bad_request(e):
         return __get_message(e, 'Bad request', 400)
 
     @app.errorhandler(401)
-    def page_not_found(e):
+    def unauthorized(e):
         return __get_message(e, 'Unauthorized', 401)
 
     @app.errorhandler(404)
@@ -16,7 +16,7 @@ def error_handler(app):
         return __get_message(e, 'Not found', 404)
 
     @app.errorhandler(405)
-    def unprocessable(e):
+    def not_allowed(e):
         return __get_message(e, 'Method not allowed', 405)
 
     @app.errorhandler(422)

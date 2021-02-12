@@ -1,9 +1,9 @@
 flask~=1.1.2
 wheel
-mongoengine
+mongoengine~=0.22.1
 pytest~=6.2.2
 pymongo~=3.11.3
 coverage==5.4
-PyJWT
-marshmallow
+PyJWT~=2.0.1
+marshmallow~=3.10.0
 Flask-Mail

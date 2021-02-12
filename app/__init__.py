@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_mail import Mail
 from mongoengine import connect
 from .utils.config.email import setup_email
 from .utils.constants import *

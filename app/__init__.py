@@ -14,6 +14,8 @@ def create_app(testing=False):
 
     app = Flask(__name__, instance_relative_config=True)
     setup_email(app)
+    mail = Mail()
+    mail.init_app(app)
 
     if testing:
         setup_db(db_name=TEST_DATABASE_NAME)

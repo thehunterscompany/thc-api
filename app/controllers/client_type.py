@@ -2,6 +2,7 @@ from flask import Blueprint, request, abort, jsonify
 from mongoengine import NotUniqueError
 
 from ..collections.client_type import ClientTypes
+from ..schemas.client_type_schema import *
 from ..utils import response, rewrite_abort, parser_one_object
 
 bp = Blueprint('client_types', __name__, url_prefix='/')
@@ -12,14 +13,10 @@ def post_client_type():
     """
     Post New Client Type
     """
-    if request.content_type == 'application/json':
-        data = request.get_json()
-    else:
-        data = request.form
     try:
-        client_type = ClientTypes(employment_type=data['employment_type'],
-                                  documents=None)
-        instance = client_type.save()
+        schema = SaveClientTypeInput()
+        document = schema.load(request.json)
+        instance = ClientTypes(**document).save()
         return response(parser_one_object(instance)), 201
 
     except NotUniqueError as err:

@@ -20,22 +20,19 @@ def register():
     """
     Register User
     """
-    if request.content_type == 'application/json':
-        data = request.get_json()
-    else:
-        data = request.form
-
     profiles = []
     client, credit_line = None, None
 
     try:
+        data = request.get_json()
+
         # Profiles
-        names = ast.literal_eval(data['name'])
-        last_names = ast.literal_eval(data['last_name'])
-        ages = ast.literal_eval(data['age'])
-        personal_ids = ast.literal_eval(data['personal_id'])
-        incomes = ast.literal_eval(data['income'])
-        employment_types = ast.literal_eval(data['employment_type'])
+        names = data['name']
+        last_names = data['last_name']
+        ages = data['age']
+        personal_ids = data['personal_id']
+        incomes = data['income']
+        employment_types = data['employment_type']
 
         client_type = ClientTypes.objects.get(
             employment_type=employment_types[0]
@@ -131,12 +128,9 @@ def login():
     User login
     """
 
-    if request.content_type == 'application/json':
-        data = request.get_json()
-    else:
-        data = request.form
-
     try:
+        data = request.get_json()
+
         user = Users.objects.get(
             email=data['email']
         )

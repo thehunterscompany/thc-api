@@ -1,5 +1,4 @@
 from flask import Flask, jsonify
-from flask_mail import Mail
 from mongoengine import connect
 from .utils.config.email import setup_email
 from .utils.constants import *
@@ -16,8 +15,6 @@ def create_app(testing=False):
     app = Flask(__name__, instance_relative_config=True)
 
     setup_email(app)
-    mail = Mail()
-    mail.init_app(app)
 
     if testing:
         setup_db(db_name=TEST_DATABASE_NAME)

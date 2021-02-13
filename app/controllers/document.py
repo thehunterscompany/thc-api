@@ -66,8 +66,10 @@ def save():
 
         return response(parser_one_object(instance)), 201
 
-    except (ValidationError or NotUniqueError) as err:
+    except ValidationError as err:
         rewrite_abort(400, err)
+    except NotUniqueError as err:
+        rewrite_abort(422, err)
     except Exception as err:
         rewrite_abort(500, err)
 

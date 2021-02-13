@@ -1,4 +1,5 @@
-from flask import Blueprint, request, abort, jsonify
+from flask import Blueprint, request
+from marshmallow import ValidationError
 from mongoengine import NotUniqueError
 
 from ..collections.role import Roles
@@ -19,8 +20,9 @@ def save():
         instance = Roles(**role).save()
         return response(parser_one_object(instance)), 201
 
+    except ValidationError as err:
+        rewrite_abort(400, err)
     except NotUniqueError as err:
         rewrite_abort(422, err)
-
     except Exception as err:
-        rewrite_abort(404, err)
+        rewrite_abort(500, err)

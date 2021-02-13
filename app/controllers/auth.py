@@ -129,7 +129,7 @@ def login():
     """
 
     try:
-        data = request.get_json()
+        data = request.json
 
         user = Users.objects.get(
             email=data['email']

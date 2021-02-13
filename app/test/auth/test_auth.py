@@ -26,7 +26,7 @@ class AuthTestCase(DefaultSetup):
                    'credit_line_type': 'leasing',
                    'financing_time': '1232'}
 
-        res = self.app_client.post('/register', data=payload)
+        res = self.app_client.post('/register', json=payload)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['result']['email'], 'ajzpiv97@gmail.com')
@@ -44,7 +44,7 @@ class AuthTestCase(DefaultSetup):
                    'employment_type': "['employee', 'self-employed']",
                    }
 
-        res = self.app_client.post('/register', data=payload)
+        res = self.app_client.post('/register', json=payload)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 422)
         self.assertTrue(data['result'], 'unprocessable')
@@ -64,7 +64,7 @@ class AuthTestCase(DefaultSetup):
                    'credit_line_type': 'leasing',
                    'financing_time': '1232'}
 
-        res = self.app_client.post('/register', data=payload)
+        res = self.app_client.post('/register', json=payload)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 400)
         self.assertTrue(data['result'], 'bad request')
@@ -84,7 +84,7 @@ class AuthTestCase(DefaultSetup):
                    'credit_line_type': 'leasing',
                    'financing_time': '1232'}
 
-        self.app_client.post('/register', data=payload)
+        self.app_client.post('/register', json=payload)
 
         payload = {'email': 'ajzpiv97@gmail.com',
                    'password': '12345',
@@ -101,7 +101,7 @@ class AuthTestCase(DefaultSetup):
                    'credit_line_type': 'leasing',
                    'financing_time': '1232'}
 
-        res = self.app_client.post('/register', data=payload)
+        res = self.app_client.post('/register', json=payload)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 422)
         self.assertTrue(data['result'], 'unprocessable')

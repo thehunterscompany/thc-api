@@ -10,16 +10,16 @@ class AuthTestCase(DefaultSetup):
             if collection in ('users', 'profiles', 'credit_lines'):
                 self.test_db[collection].drop()
 
-    def test_register_client(self):
+    def test_register_login_client(self):
         payload = {'email': 'ajzpiv97@gmail.com',
                    'password': '12345',
                    'role_type': 'client',
-                   'name': "['Armando',  'Jose']",
-                   'last_name': "['Zubillaga', 'Prado']",
-                   'age': "[25, 28]",
-                   'personal_id': "['1111', '111223']",
-                   'income': "['111111', '2323342']",
-                   'employment_type': "['employee', 'self-employed']",
+                   'name': ['Armando',  'Jose'],
+                   'last_name': ['Zubillaga', 'Prado'],
+                   'age': [25, 28],
+                   'personal_id': ['1111', '111223'],
+                   'income': ['111111', '2323342'],
+                   'employment_type': ['employee', 'self-employed'],
                    'budget': '124324',
                    'initial_payment': '41234123423',
                    'financing_value': '14324123413242314',
@@ -29,7 +29,14 @@ class AuthTestCase(DefaultSetup):
         res = self.app_client.post('/register', json=payload)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
-        self.assertTrue(data['result']['email'], 'ajzpiv97@gmail.com')
+
+        payload = {'email': 'ajzpiv97@gmail.com',
+                   'password': '12345'}
+
+        res = self.app_client.post('/login', json=payload)
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['result']['user']['loggedIn'], True)
 
     def test_fail_register_client(self):
         # Not unique id
@@ -105,5 +112,4 @@ class AuthTestCase(DefaultSetup):
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 422)
         self.assertTrue(data['result'], 'unprocessable')
-
 

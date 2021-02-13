@@ -66,10 +66,8 @@ def save():
 
         return response(parser_one_object(instance)), 201
 
-    except ValidationError as validation_err:
-        rewrite_abort(400, validation_err)
-    except NotUniqueError:
-        abort(400)
+    except (ValidationError or NotUniqueError) as err:
+        rewrite_abort(400, err)
     except Exception as err:
         rewrite_abort(500, err)
 
@@ -79,14 +77,12 @@ def update(id):
     try:
         schema = UpdateDocumentInput()
         document = schema.load(request.json)
-        instance = update_or_create(Documents, { 'id': id }, document)
+        instance = update_or_create(Documents, {'id': id}, document)
 
         return response(parser_one_object(instance))
 
-    except ValidationError as validation_err:
-        rewrite_abort(400, validation_err)
-    except NotUniqueError:
-        abort(400)
+    except (ValidationError or NotUniqueError) as err:
+        rewrite_abort(400, err)
     except Exception as err:
         rewrite_abort(500, err)
 

@@ -2,7 +2,7 @@ from flask import Blueprint, request, abort, jsonify
 from mongoengine import NotUniqueError
 
 from ..collections.client_type import ClientTypes
-from ..utils import response
+from ..utils import response, rewrite_abort
 
 bp = Blueprint('client_types', __name__, url_prefix='/')
 
@@ -22,8 +22,8 @@ def post_client_type():
         client_type.save()
         return jsonify(response(client_type.to_json()))
 
-    except NotUniqueError:
-        abort(422)
+    except NotUniqueError as err:
+        rewrite_abort(422, err)
 
-    except Exception:
-        abort(404)
+    except Exception as err:
+        rewrite_abort(404, err)

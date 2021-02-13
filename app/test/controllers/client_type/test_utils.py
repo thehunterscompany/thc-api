@@ -1,5 +1,5 @@
 import json
-from app.test.utils.setup_utils_test import UtilsSetup
+from app.test.controllers.client_type.setup_utils_test import UtilsSetup
 
 
 class TestCase(UtilsSetup):
@@ -33,7 +33,7 @@ class TestCase(UtilsSetup):
 
     def test_fail_duplicate_post_roles(self):
         payload = {'type': 'test1', 'description': 'test case'}
-        res = self.app_client.post('/roles', data=payload)
+        res = self.app_client.post('/roles', json=payload)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -47,7 +47,7 @@ class TestCase(UtilsSetup):
 
     def test_post_client_type(self):
         payload = {'employment_type': 'test1'}
-        res = self.app_client.post('/client_types', data=payload)
+        res = self.app_client.post('/client_types', json=payload)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -62,7 +62,7 @@ class TestCase(UtilsSetup):
 
     def test_fail_duplicate_post_client_type(self):
         payload = {'employment_type': 'test1'}
-        res = self.app_client.post('/client_types', data=payload)
+        res = self.app_client.post('/client_types', json=payload)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)

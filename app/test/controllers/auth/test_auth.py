@@ -1,5 +1,5 @@
 import json
-from app.test.auth.setup_test_auth import DefaultSetup
+from app.test.controllers.auth.setup_test_auth import DefaultSetup
 
 
 class AuthTestCase(DefaultSetup):

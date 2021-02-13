@@ -4,7 +4,7 @@ from app.collections.documents import Documents
 
 
 class ClientTypes(me.Document):
-    employment_type = me.StringField(unique=True)
+    employment_type = me.StringField(unique=True, required=True)
     documents = me.ListField(me.ReferenceField(Documents, reverse_delete_rule=me.NULLIFY, null=True))
 
     def format(self):

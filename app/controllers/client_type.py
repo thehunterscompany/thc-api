@@ -9,7 +9,7 @@ bp = Blueprint('client_types', __name__, url_prefix='/')
 
 
 @bp.route('/client_types', methods=['POST'])
-def post_client_type():
+def save():
     """
     Post New Client Type
     """

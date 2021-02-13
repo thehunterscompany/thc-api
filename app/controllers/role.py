@@ -9,7 +9,7 @@ bp = Blueprint('roles', __name__, url_prefix='/')
 
 
 @bp.route('/roles', methods=['POST'])
-def post_roles():
+def save():
     """
     Post New Role
     """

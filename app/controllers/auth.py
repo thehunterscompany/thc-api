@@ -8,7 +8,7 @@ from app.collections.profile import Profiles
 from app.collections.role import Roles
 from app.collections.client import Clients
 from app.collections.user import Users
-from app.utils import response, rewrite_abort
+from app.utils import response, rewrite_abort, parser_one_object
 from app.utils.auth.password_jwt import *
 from app.utils.config.email import send_mail
 
@@ -104,7 +104,9 @@ def register():
 
         send_mail()
 
-        client.save()
+        instance = client.save()
+
+        return response(parser_one_object(instance)), 201
 
     except NotUniqueError as err:
         for profile in profiles:
@@ -118,8 +120,6 @@ def register():
             profile.delete()
         credit_line.delete()
         rewrite_abort(400, err)
-
-    return jsonify(response(client.to_json()))
 
 
 @bp.route('/login', methods=['POST'])
@@ -137,7 +137,7 @@ def login():
 
         if not user.verified:
             if data['password'] == decrypt_data(user.password):
-                return jsonify(response(generate_jwt(user)))
+                return response(generate_jwt(user))
             else:
                 err = 'Your password is incorrect.'
                 rewrite_abort(401, err)

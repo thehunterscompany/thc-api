@@ -2,7 +2,7 @@ from flask import Blueprint, request, abort, jsonify
 from mongoengine import NotUniqueError
 
 from ..collections.role import Roles
-from ..utils import response, rewrite_abort
+from ..utils import response, rewrite_abort, parser_one_object
 
 bp = Blueprint('roles', __name__, url_prefix='/')
 
@@ -12,14 +12,11 @@ def post_roles():
     """
     Post New Role
     """
-    if request.content_type == 'application/json':
-        data = request.get_json()
-    else:
-        data = request.form
+    data = request.get_json()
     try:
         role = Roles(type=data['type'], description=data['description'])
-        role.save()
-        return jsonify(response(role.to_json()))
+        instance = role.save()
+        return response(parser_one_object(instance)), 201
 
     except NotUniqueError as err:
         rewrite_abort(422, err)

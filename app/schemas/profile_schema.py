@@ -9,5 +9,5 @@ class SaveProfileInput(Schema):
     age = fields.Int()
     personal_id = fields.Str(unique=True, required=True)
     income = fields.Str(required=True)
-    client_type = fields.Nested(SaveClientTypeInput(), required=True)
+    client_type = fields.Raw(required=True)
 

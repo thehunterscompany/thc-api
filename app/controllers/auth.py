@@ -73,10 +73,16 @@ def register():
 
     except NotUniqueError as err:
         new_user_instance.delete()
+        credit_line_instance.delete()
+        for profile in profiles:
+            profile.delete()
         rewrite_abort(422, err)
 
     except Exception as err:
         new_user_instance.delete()
+        credit_line_instance.delete()
+        for profile in profiles:
+            profile.delete()
         rewrite_abort(400, err)
 
 

@@ -1,5 +1,6 @@
 import ast
 from flask import Blueprint, request, jsonify
+from marshmallow import ValidationError
 from mongoengine import NotUniqueError
 
 from app.collections.client_type import ClientTypes
@@ -8,6 +9,9 @@ from app.collections.profile import Profiles
 from app.collections.role import Roles
 from app.collections.client import Clients
 from app.collections.user import Users
+from app.schemas.client_schema import SaveClientInput
+from app.schemas.credit_line_schema import SaveCreditLineInput
+from app.schemas.profile_schema import SaveProfileInput
 from app.utils import response, rewrite_abort, parser_one_object
 from app.utils.auth.password_jwt import *
 from app.utils.config.email import send_mail
@@ -21,104 +25,58 @@ def register():
     Register User
     """
     profiles = []
-    client, credit_line = None, None
-
+    credit_line_instance = None
+    new_user_instance = None
     try:
-        data = request.get_json()
-
-        # Profiles
-        names = data['name']
-        last_names = data['last_name']
-        ages = data['age']
-        personal_ids = data['personal_id']
-        incomes = data['income']
-        employment_types = data['employment_type']
-
-        client_type = ClientTypes.objects.get(
-            employment_type=employment_types[0]
-        )
-        # Profiles
-        for i in range(len(names)):
-            if i > 0:
-                if employment_types[i] != employment_types[i-1]:
-
-                    client_type = ClientTypes.objects.get(
-                        employment_type=employment_types[i]
-                    )
-
-            profile = Profiles(name=names[i], last_name=last_names[i],
-                               age=ages[i],
-                               personal_id=personal_ids[i],
-                               income=incomes[i], client_type=client_type)
-
+        for profile in request.json['profiles']:
+            profile['client_type'] = ClientTypes.objects.get(employment_type=profile['client_type'])
             profiles.append(profile)
-        for profile in profiles:
-            profile.save()
+        profiles = SaveProfileInput(many=True).load(profiles, unknown='EXCLUDE')
+        for i in range(len(profiles)):
+            profiles[i] = Profiles(**profiles[i]).save()
 
-    except NotUniqueError as err:
-        try:
-            for profile in profiles:
-                profile.delete()
-        except Exception:
-            pass
-        rewrite_abort(422, err)
-
-    except Exception as err:
-        try:
-            for profile in profiles:
-                profile.delete()
-        except Exception:
-            pass
+    except ValidationError as err:
         rewrite_abort(400, err)
-
-    try:
-        # Credit Line
-        budget = data['budget']
-        initial_payment = data['initial_payment']
-        financing_value = data['financing_value']
-        credit_line_type = data['credit_line_type']
-        financing_time = data['financing_time']
-
-        credit_line = CreditLines(budget=budget,
-                                  initial_payment=initial_payment,
-                                  financing_value=financing_value,
-                                  credit_line_type=credit_line_type,
-                                  financing_time=financing_time)
-
-        credit_line.save()
-
+    except NotUniqueError as err:
+        rewrite_abort(422, err)
     except Exception as err:
+        rewrite_abort(500, err)
+
+    # Credit Line
+    try:
+        schema = SaveCreditLineInput()
+        credit_line = schema.load(request.json['credit_line'], unknown='EXCLUDE')
+        credit_line_instance = CreditLines(**credit_line).save()
+
+    except ValidationError as err:
         for profile in profiles:
             profile.delete()
         rewrite_abort(400, err)
+    except Exception as err:
+        for profile in profiles:
+            profile.delete()
+        rewrite_abort(500, err)
 
-    client = None
     try:
-        email = data['email']
-        password = encrypt_data(data, 'password')
-        role_type = data['role_type']
-        role = Roles.objects.get(type=role_type)
-        client = Clients(email=email, password=password, role_type=role,
-                         profile=profiles, credit_line=credit_line,
-                         number_owners=len(profiles), referred_by='me')
+        request.json['password'] = encrypt_data(request.json, 'password')
+        request.json['role_type'] = Roles.objects.get(type=request.json['role_type'])
+        request.json['profiles'] = profiles
+        request.json['credit_line'] = credit_line_instance
+
+        client_instance = SaveClientInput().load(request.json, unknown='EXCLUDE')
+
+        new_user_instance = Clients(**client_instance).save()
 
         send_mail()
 
-        instance = client.save()
-
-        return response(parser_one_object(instance)), 201
+        return response(parser_one_object(new_user_instance)), 201
 
     except NotUniqueError as err:
-        for profile in profiles:
-            profile.delete()
-        credit_line.delete()
+        new_user_instance.delete()
         rewrite_abort(422, err)
 
     except Exception as err:
-
-        for profile in profiles:
-            profile.delete()
-        credit_line.delete()
+        new_user_instance.delete()
         rewrite_abort(400, err)
 
 

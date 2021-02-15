@@ -4,10 +4,10 @@ from app.schemas.client_type_schema import SaveClientTypeInput
 
 
 class SaveProfileInput(Schema):
-    name = fields.Str()
-    last_name = fields.Str()
+    name = fields.Str(required=True)
+    last_name = fields.Str(required=True)
     age = fields.Int()
-    personal_id = fields.Str(unique=True)
-    income = fields.Str()
+    personal_id = fields.Str(unique=True, required=True)
+    income = fields.Str(required=True)
     client_type = fields.Nested(SaveClientTypeInput(), required=True)
 

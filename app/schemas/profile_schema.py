@@ -1,7 +1,5 @@
 from marshmallow import Schema, fields
 
-from app.schemas.client_type_schema import SaveClientTypeInput
-
 
 class SaveProfileInput(Schema):
     name = fields.Str(required=True)

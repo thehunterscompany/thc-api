@@ -7,8 +7,8 @@ from app.collections.profile import Profiles
 
 
 class Clients(Users):
-    profiles = me.ListField(me.ReferenceField(document_type=Profiles, reverse_delete_rule=me.CASCADE), required=True)
-    credit_line = me.ReferenceField(document_type=CreditLines, reverse_delete_rule=me.CASCADE, required=True)
+    profiles = me.ListField(me.ReferenceField(document_type=Profiles, reverse_delete_rule=me.NULLIFY), required=True)
+    credit_line = me.ReferenceField(document_type=CreditLines, reverse_delete_rule=me.NULLIFY, required=True)
     number_owners = me.IntField()
     referred_by = me.StringField()
 

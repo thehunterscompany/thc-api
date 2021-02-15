@@ -9,7 +9,7 @@ class Profiles(me.Document):
     age = me.IntField()
     personal_id = me.StringField(required=True, unique=True)
     income = me.StringField(required=True)
-    client_type = me.ReferenceField(document_type=ClientTypes, reverse_delete_rule=me.CASCADE, required=True)
+    client_type = me.ReferenceField(document_type=ClientTypes, reverse_delete_rule=me.NULLIFY, required=True)
 
     def format(self):
         return {

@@ -4,12 +4,12 @@ from app.collections.client_type import ClientTypes
 
 
 class Profiles(me.Document):
-    name = me.StringField()
-    last_name = me.StringField()
+    name = me.StringField(required=True)
+    last_name = me.StringField(required=True)
     age = me.IntField()
-    personal_id = me.StringField(unique=True)
-    income = me.StringField()
-    client_type = me.ReferenceField(document_type=ClientTypes, reverse_delete_rule=me.CASCADE)
+    personal_id = me.StringField(required=True, unique=True)
+    income = me.StringField(required=True)
+    client_type = me.ReferenceField(document_type=ClientTypes, reverse_delete_rule=me.CASCADE, required=True)
 
     def format(self):
         return {

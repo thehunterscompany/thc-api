@@ -113,3 +113,9 @@ class AuthTestCase(DefaultSetup):
         self.assertEqual(res.status_code, 422)
         self.assertTrue(data['result'], 'unprocessable')
 
+    def test_email_confirmation(self):
+        res = self.app_client.get('/confirm/{}'.format("http://localhost:5000/confirm/token?token="
+                                                        "ImFqenBpdjk3QGdtYWlsLmNvbSI.YCsyuw.B7pebCMPLGNF4kJtCqoyU0jMBBU"))
+        self.assertEqual(res.status_code, 422)
+
+

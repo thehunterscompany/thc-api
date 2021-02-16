@@ -1,5 +1,5 @@
 import ast
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, redirect, url_for, render_template
 from marshmallow import ValidationError
 from mongoengine import NotUniqueError
 
@@ -14,6 +14,7 @@ from app.schemas.credit_line_schema import SaveCreditLineInput
 from app.schemas.profile_schema import SaveProfileInput
 from app.utils import response, rewrite_abort, parser_one_object
 from app.utils.auth.password_jwt import *
+from app.utils.auth.token import generate_confirmation_token, confirm_token
 from app.utils.config.email import send_mail
 
 bp = Blueprint('auth', __name__, url_prefix='/')
@@ -67,7 +68,12 @@ def register():
 
         new_user_instance = Clients(**client_instance).save()
 
-        send_mail()
+        token = generate_confirmation_token(new_user_instance.email)
+        # return '{}'.format(token)
+        confirm_url = url_for('auth.confirm_email', token=token, _external=True)
+        html = render_template('send_confirmation.html', confirm_url=confirm_url)
+        subject = "Please confirm your email"
+        send_mail(new_user_instance.email, html, subject)
 
         return response(parser_one_object(new_user_instance)), 201
 
@@ -84,6 +90,23 @@ def register():
         for profile in profiles:
             profile.delete()
         rewrite_abort(400, err)
+
+
+@bp.route('/confirm/<token>', methods=['GET'])
+def confirm_email(token):
+    email = None
+    try:
+        email = confirm_token(token)
+    except Exception as err:
+        rewrite_abort(410, err)
+
+    user = Users.objects.get(email=email)
+    if user.verified:
+        pass
+    else:
+        user.verified = True
+        user.update()
+    return response(parser_one_object(user)), 201
 
 
 @bp.route('/login', methods=['POST'])

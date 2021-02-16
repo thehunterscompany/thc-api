@@ -17,6 +17,7 @@ def create_app(testing=False):
     setup_email(app)
 
     if testing:
+        app.config['TESTING'] = True
         setup_db(db_name=TEST_DATABASE_NAME)
     else:
         setup_db()

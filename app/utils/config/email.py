@@ -20,8 +20,7 @@ def setup_email(app):
     app.config['SECURITY_PASSWORD_SALT'] = SECURITY_PASSWORD_SALT
 
 
-def send_mail():
+def send_mail(recipient, html, subject):
     mail = Mail(current_app)
-    msg = Message('Hello', sender='ajzpiv97@gmail.com', recipients=['ajzpiv97@gmail.com'])
-    msg.body = "Hello Flask message sent from Flask-Mail {}".format(datetime.datetime.now())
+    msg = Message(subject, sender='ajzpiv97@gmail.com', recipients=[recipient], html=html)
     mail.send(msg)

@@ -11,8 +11,8 @@ def generate_confirmation_token(email: str) -> URLSafeTimedSerializer:
     :param email:
     :return:
     """
-    serializer = URLSafeTimedSerializer(current_app.config[SECRET_KEY])
-    return serializer.dumps(email, salt=current_app.config[SECURITY_PASSWORD_SALT])
+    serializer = URLSafeTimedSerializer(SECRET_KEY)
+    return serializer.dumps(email, salt=SECURITY_PASSWORD_SALT)
 
 
 def confirm_token(token, expiration=3600) -> str or bool:

@@ -45,7 +45,7 @@ class AuthTestCase(DefaultSetup):
         self.assertEqual(res.status_code, 201)
 
         res = self.app_client.get('/confirm/{}'.format(
-            "ImFqenBpdjk3QGdt""YWlsLmNvbSI.YCs-Dg.bSZDcEVvK832qLkTa22V7ZJ8oi4"))
+            "ImFqenBpdjk3QGdtYWlsLmNvbSI.YCtJCA.Is1wsPAlmCXveV - lvAuFYzdSnyk"))
 
         payload = {'email': 'ajzpiv97@gmail.com',
                    'password': '12345'}

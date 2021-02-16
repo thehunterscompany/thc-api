@@ -15,7 +15,7 @@ def generate_confirmation_token(email: str) -> URLSafeTimedSerializer:
     return serializer.dumps(email, salt=SECURITY_PASSWORD_SALT)
 
 
-def confirm_token(token, expiration=3600) -> str or bool:
+def confirm_token(token, expiration=1) -> str or Exception:
     """
 
     :param token:
@@ -29,6 +29,6 @@ def confirm_token(token, expiration=3600) -> str or bool:
             salt=SECURITY_PASSWORD_SALT,
             max_age=expiration
         )
-    except:
-        return False
+    except Exception as err:
+        return err
     return email

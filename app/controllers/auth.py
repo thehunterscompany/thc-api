@@ -105,7 +105,7 @@ def confirm_email(token):
         pass
     else:
         user.verified = True
-        user.update()
+        user.save()
     return response(parser_one_object(user)), 201
 
 
@@ -122,7 +122,7 @@ def login():
             email=data['email']
         )
 
-        if not user.verified:
+        if user.verified:
             if data['password'] == decrypt_data(user.password):
                 return response(generate_jwt(user))
             else:

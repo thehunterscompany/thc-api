@@ -11,24 +11,41 @@ class AuthTestCase(DefaultSetup):
                 self.test_db[collection].drop()
 
     def test_register_login_client(self):
-        payload = {'email': 'ajzpiv97@gmail.com',
-                   'password': '12345',
-                   'role_type': 'client',
-                   'name': ['Armando',  'Jose'],
-                   'last_name': ['Zubillaga', 'Prado'],
-                   'age': [25, 28],
-                   'personal_id': ['1111', '111223'],
-                   'income': ['111111', '2323342'],
-                   'employment_type': ['employee', 'self-employed'],
-                   'budget': '124324',
-                   'initial_payment': '41234123423',
-                   'financing_value': '14324123413242314',
-                   'credit_line_type': 'leasing',
-                   'financing_time': '1232'}
+        payload = {"email": "ajzpiv97@gmail.com",
+                   "password": "12345",
+                   "role_type": "client",
+                   "profiles": [
+                       {
+                           "name": "Armando",
+                           "last_name": "Zubillaga",
+                           "age": 25,
+                           "personal_id": "1111",
+                           "income": "12314423",
+                           "client_type": "employee"
+
+                       },
+                       {
+                           "name": "Jose",
+                           "last_name": "Prado",
+                           "age": 29,
+                           "personal_id": "243543645",
+                           "income": "12314423",
+                           "client_type": "employee"
+                       }],
+                   "number_owners": 2,
+                   "credit_line": {"budget": "124324",
+                                   "initial_payment": "41234123423",
+                                   "financing_value": "14324123413242314",
+                                   "credit_line_type": "leasing",
+                                   "financing_time": "1232"}
+                   }
 
         res = self.app_client.post('/register', json=payload)
         data = json.loads(res.data)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, 201)
+
+        res = self.app_client.get('/confirm/{}'.format(
+            "ImFqenBpdjk3QGdt""YWlsLmNvbSI.YCs-Dg.bSZDcEVvK832qLkTa22V7ZJ8oi4"))
 
         payload = {'email': 'ajzpiv97@gmail.com',
                    'password': '12345'}
@@ -114,8 +131,6 @@ class AuthTestCase(DefaultSetup):
         self.assertTrue(data['result'], 'unprocessable')
 
     def test_email_confirmation(self):
-        res = self.app_client.get('/confirm/{}'.format("http://localhost:5000/confirm/token?token="
-                                                        "ImFqenBpdjk3QGdtYWlsLmNvbSI.YCsyuw.B7pebCMPLGNF4kJtCqoyU0jMBBU"))
+        res = self.app_client.get('/confirm/{}'.format(
+            "ImFqenBpdjk3QGdt""YWlsLmNvbSI.YCs-Dg.bSZDcEVvK832qLkTa22V7ZJ8oi4"))
         self.assertEqual(res.status_code, 422)
-
-

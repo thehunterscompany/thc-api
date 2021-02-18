@@ -1,8 +1,6 @@
-import ast
-from flask import Blueprint, request, jsonify, redirect, url_for, render_template
+from flask import Blueprint, request, redirect, url_for, render_template
 from marshmallow import ValidationError
 from mongoengine import NotUniqueError
-
 from app.collections.client_type import ClientTypes
 from app.collections.credit_line import CreditLines
 from app.collections.profile import Profiles
@@ -18,6 +16,12 @@ from app.utils.auth.token import generate_confirmation_token, confirm_token
 from app.utils.config.email import send_mail
 
 bp = Blueprint('auth', __name__, url_prefix='/')
+
+
+class AuthError(Exception):
+    def __init__(self, error, status_code):
+        self.error = error
+        self.status_code = status_code
 
 
 @bp.route('/register', methods=['POST'])
@@ -94,19 +98,40 @@ def register():
 
 @bp.route('/confirm/<token>', methods=['GET'])
 def confirm_email(token):
-    email = None
     try:
         email = confirm_token(token)
-    except Exception as err:
-        rewrite_abort(410, err)
+        if 'Signature' and 'age' in email.split():
+            raise AuthError({
+                'code': 'Bad Request',
+                'description': 'The Url has expired!'
+            }, 400)
+        if 'Signature' and 'match' in email.split():
+            raise AuthError({
+                'code': 'Unauthorized',
+                'description': 'Signature does not match!'
+            }, 401)
 
-    user = Users.objects.get(email=email)
-    if user.verified:
-        pass
-    else:
-        user.verified = True
-        user.save()
-    return response(parser_one_object(user)), 201
+        user = Users.objects(email=email).first()
+
+        if user is None:
+            raise AuthError({
+                'code': 'Not Found',
+                'description': 'User Not Found!'
+            }, 404)
+
+        if user.verified:
+            raise AuthError({
+                'code': 'Conflict',
+                'description': 'User already verified! Please login!'
+            }, 409)
+
+    except AuthError as err:
+        return render_template('confirmation_error.html', status_code=err.status_code,
+                               error_type=err.error['code'], description=err.error['description'])
+
+    user.verified = True
+    user.save()
+    return render_template('confirmation_valid.html')
 
 
 @bp.route('/login', methods=['POST'])

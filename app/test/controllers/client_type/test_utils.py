@@ -1,5 +1,5 @@
 import json
-from app.test.controllers.client_type.setup_utils_test import UtilsSetup
+from app.test.controllers.client_type.test_setup_utils import UtilsSetup
 
 
 class TestCase(UtilsSetup):

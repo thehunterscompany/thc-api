@@ -1,8 +1,5 @@
-from itsdangerous import URLSafeTimedSerializer
-
 from flask import current_app
-
-from app.utils.constants import SECRET_KEY, SECURITY_PASSWORD_SALT
+from itsdangerous import URLSafeTimedSerializer
 
 
 def generate_confirmation_token(email: str) -> URLSafeTimedSerializer:
@@ -11,24 +8,24 @@ def generate_confirmation_token(email: str) -> URLSafeTimedSerializer:
     :param email:
     :return:
     """
-    serializer = URLSafeTimedSerializer(SECRET_KEY)
-    return serializer.dumps(email, salt=SECURITY_PASSWORD_SALT)
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    return serializer.dumps(email, salt=current_app.config['SECURITY_PASSWORD_SALT'])
 
 
-def confirm_token(token, expiration=1) -> str or Exception:
+def confirm_token(token, expiration=4000) -> str:
     """
 
     :param token:
     :param expiration:
     :return
     """
-    serializer = URLSafeTimedSerializer(SECRET_KEY)
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     try:
         email = serializer.loads(
             token,
-            salt=SECURITY_PASSWORD_SALT,
+            salt=current_app.config['SECURITY_PASSWORD_SALT'],
             max_age=expiration
         )
     except Exception as err:
-        return err
+        return '{}'.format(err)
     return email

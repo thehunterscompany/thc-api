@@ -16,7 +16,7 @@ def setup_email(app):
     app.config['MAIL_USERNAME'] = MAIL_USERNAME
     app.config['MAIL_PASSWORD'] = MAIL_PASSWORD
     app.config['MAIL_USE_SSL'] = MAIL_USE_SSL
-    app.config['SECRET_KEY'] = SECURITY_PASSWORD_SALT
+    app.config['SECRET_KEY'] = SECRET_KEY
     app.config['SECURITY_PASSWORD_SALT'] = SECURITY_PASSWORD_SALT
 
 

@@ -11,6 +11,10 @@ def error_handler(app):
     def unauthorized(e):
         return __get_message(e, 'Unauthorized', 401)
 
+    @app.errorhandler(403)
+    def page_not_found(e):
+        return __get_message(e, 'Forbidden', 403)
+
     @app.errorhandler(404)
     def page_not_found(e):
         return __get_message(e, 'Not found', 404)

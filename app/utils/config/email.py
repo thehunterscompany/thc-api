@@ -1,9 +1,10 @@
-import datetime
-
+import logging
 from flask import current_app
 from flask_mail import Mail, Message
 
 from app.utils.constants import *
+
+logger = logging.getLogger(__name__)
 
 
 def setup_email(app):
@@ -23,5 +24,6 @@ def setup_email(app):
 
 def send_mail(recipient, html, subject, sender=''):
     mail = Mail(current_app)
+    logger.info(f"Sender {mail.app.config['MAIL_DEFAULT_SENDER']}")
     msg = Message(subject, sender=sender, recipients=[recipient], html=html)
     mail.send(msg)

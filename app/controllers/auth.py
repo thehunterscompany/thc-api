@@ -32,57 +32,53 @@ def register():
     profiles = []
     credit_line_instance = None
     new_user_instance = None
-    try:
-        for profile in request.json['profiles']:
-            profile['client_type'] = ClientTypes.objects.get(employment_type=profile['client_type'])
-            profiles.append(profile)
-        profiles = SaveProfileInput(many=True).load(profiles, unknown='EXCLUDE')
-        for i in range(len(profiles)):
-            profiles[i] = Profiles(**profiles[i]).save()
-
-    except ValidationError as err:
-        rewrite_abort(400, err)
-    except NotUniqueError as err:
-        rewrite_abort(422, err)
-    except Exception as err:
-        rewrite_abort(500, err)
-
-    # Credit Line
-    try:
-        schema = SaveCreditLineInput()
-        credit_line = schema.load(request.json['credit_line'], unknown='EXCLUDE')
-        credit_line_instance = CreditLines(**credit_line).save()
-
-    except ValidationError as err:
-        for profile in profiles:
-            profile.delete()
-        rewrite_abort(400, err)
-    except Exception as err:
-        for profile in profiles:
-            profile.delete()
-        rewrite_abort(500, err)
 
     try:
         request.json['password'] = encrypt_data(request.json, 'password')
         request.json['role_type'] = Roles.objects.get(type=request.json['role_type'])
-        request.json['profiles'] = profiles
-        request.json['credit_line'] = credit_line_instance
 
         client_instance = SaveClientInput().load(request.json, unknown='EXCLUDE')
 
         new_user_instance = Clients(**client_instance).save()
 
     except NotUniqueError as err:
-        credit_line_instance.delete()
-        for profile in profiles:
-            profile.delete()
         rewrite_abort(422, err)
 
     except Exception as err:
-        credit_line_instance.delete()
-        for profile in profiles:
-            profile.delete()
         rewrite_abort(400, err)
+
+    try:
+        for profile in request.json['profiles']:
+            profile['client_type'] = ClientTypes.objects.get(employment_type=profile['client_type'])
+            profile['client'] = new_user_instance
+            profiles.append(profile)
+        profiles = SaveProfileInput(many=True).load(profiles, unknown='EXCLUDE')
+        for i in range(len(profiles)):
+            profiles[i] = Profiles(**profiles[i]).save()
+
+    except ValidationError as err:
+        new_user_instance.delete()
+        rewrite_abort(400, err)
+    except NotUniqueError as err:
+        new_user_instance.delete()
+        rewrite_abort(422, err)
+    except Exception as err:
+        new_user_instance.delete()
+        rewrite_abort(500, err)
+
+    # Credit Line
+    try:
+        schema = SaveCreditLineInput()
+        request.json['credit_line']['client'] = new_user_instance
+        credit_line = schema.load(request.json['credit_line'], unknown='EXCLUDE')
+        credit_line_instance = CreditLines(**credit_line).save()
+
+    except ValidationError as err:
+        new_user_instance.delete()
+        rewrite_abort(400, err)
+    except Exception as err:
+        new_user_instance.delete()
+        rewrite_abort(500, err)
 
     try:
         token = generate_confirmation_token(new_user_instance.email)
@@ -97,9 +93,6 @@ def register():
 
     except Exception as err:
         new_user_instance.delete()
-        credit_line_instance.delete()
-        for profile in profiles:
-            profile.delete()
         rewrite_abort(422, err)
 
 

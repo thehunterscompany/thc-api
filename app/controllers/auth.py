@@ -1,3 +1,4 @@
+import logging
 from flask import Blueprint, request, redirect, url_for, render_template
 from marshmallow import ValidationError
 from mongoengine import NotUniqueError
@@ -16,6 +17,7 @@ from app.utils.auth.token import generate_confirmation_token, confirm_token
 from app.utils.config.email import send_mail
 
 bp = Blueprint('auth', __name__, url_prefix='/')
+logger = logging.getLogger(__name__)
 
 
 class AuthError(Exception):
@@ -36,14 +38,11 @@ def register():
     try:
         request.json['password'] = encrypt_data(request.json, 'password')
         request.json['role_type'] = Roles.objects.get(type=request.json['role_type'])
-
         client_instance = SaveClientInput().load(request.json, unknown='EXCLUDE')
-
         new_user_instance = Clients(**client_instance).save()
 
     except NotUniqueError as err:
         rewrite_abort(422, err)
-
     except Exception as err:
         rewrite_abort(400, err)
 
@@ -58,9 +57,11 @@ def register():
 
     except ValidationError as err:
         new_user_instance.delete()
+
         rewrite_abort(400, err)
     except NotUniqueError as err:
         new_user_instance.delete()
+
         rewrite_abort(422, err)
     except Exception as err:
         new_user_instance.delete()
@@ -75,6 +76,7 @@ def register():
 
     except ValidationError as err:
         new_user_instance.delete()
+
         rewrite_abort(400, err)
     except Exception as err:
         new_user_instance.delete()

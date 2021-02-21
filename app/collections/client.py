@@ -4,7 +4,7 @@ from app.collections.user import Users
 
 
 class Clients(Users):
-    # profiles = me.ListField(me.ReferenceField(document_type=Profiles, reverse_delete_rule=me.NULLIFY), required=True)
+    profiles = me.ListField(me.ReferenceField('Profiles'))
     credit_line = me.ReferenceField('CreditLines')
     number_owners = me.IntField()
     referred_by = me.StringField()

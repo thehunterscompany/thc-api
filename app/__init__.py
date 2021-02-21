@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from mongoengine import connect, NULLIFY, CASCADE
 from .collections.client import Clients
 from .collections.credit_line import CreditLines
+from .collections.profile import Profiles
 from .utils.config.email import setup_email
 from .utils.constants import *
 from .utils.error_handler import error_handler
@@ -36,11 +37,14 @@ def create_app(testing=False):
     app.wsgi_app = ContentTypeMiddleware(app.wsgi_app)
 
     app.register_blueprint(auth.bp)
-    CreditLines.register_delete_rule(Clients, 'credit_line', NULLIFY)
-    Clients.register_delete_rule(CreditLines, 'client', CASCADE)
-
     app.register_blueprint(document.bp)
     app.register_blueprint(role.bp)
     app.register_blueprint(client_type.bp)
+
+    # Bidirectional reference
+    CreditLines.register_delete_rule(Clients, 'credit_line', NULLIFY)
+    Profiles.register_delete_rule(Clients, 'profiles', NULLIFY)
+    Clients.register_delete_rule(CreditLines, 'client', CASCADE)
+    Clients.register_delete_rule(Profiles, 'client', CASCADE)
 
     return app

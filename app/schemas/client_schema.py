@@ -8,3 +8,4 @@ class SaveClientInput(Schema):
     verified = fields.Bool()
     referred_by = fields.Str()
     credit_line = fields.Raw()
+    profiles = fields.Raw()

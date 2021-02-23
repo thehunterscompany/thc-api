@@ -1,3 +1,25 @@
+from mongoengine import QuerySet, Document
+from bson.json_util import dumps
+from .parser import parser_one_object
+
+class RefQuerySet(QuerySet):
+    def to_json(self):
+        data = "[%s]" % (",".join([value.to_json() for value in self]))
+        return data
+
+
+def override_result(collection):
+    data = collection.select_related()
+
+    data = {
+        key if key != 'id' else '_id': [parser_one_object(old_data) for old_data in data[key]]
+        if isinstance(data[key], list) else str(data[key].id)
+        if isinstance(data[key], Document) else data[key] for key in data
+    }
+
+    return dumps(data)
+
+
 def pagination(page, per_page, sort_results):
     page = int(page) if page else 1
     per_page = int(per_page) if per_page else 15

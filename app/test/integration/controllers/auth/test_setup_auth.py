@@ -1,6 +1,6 @@
 import unittest
 
-from app.test.controllers.setup_test_db import SetupTestDB
+from app.test.integration.controllers.setup_test_db import SetupTestDB
 
 
 class DefaultSetup(SetupTestDB, unittest.TestCase):

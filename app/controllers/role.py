@@ -10,7 +10,7 @@ bp = Blueprint('roles', __name__, url_prefix='/')
 
 
 @bp.route('/roles', methods=['POST'])
-def save():
+def save():  # pragma: no cover
     """
     Post New Role
     """

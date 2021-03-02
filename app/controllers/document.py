@@ -9,7 +9,7 @@ bp = Blueprint('document', __name__, url_prefix='/')
 
 
 @bp.route('/documents', methods=['GET'])
-def table():
+def table():  # pragma: no cover
     try:
         search, page, per_page = unpack_url_params()
 
@@ -44,7 +44,7 @@ def table():
 
 
 @bp.route('/documents/<id>', methods=['GET'])
-def get(id):
+def get(id):  # pragma: no cover
     try:
         document = Documents.objects.get(id=id)
         document = parser_one_object(document)
@@ -58,7 +58,7 @@ def get(id):
 
 
 @bp.route('/documents', methods=['POST'])
-def save():
+def save():  # pragma: no cover
     try:
         schema = SaveDocumentInput()
         document = schema.load(request.json)
@@ -75,7 +75,7 @@ def save():
 
 
 @bp.route('/documents/<id>', methods=['PUT'])
-def update(id):
+def update(id):  # pragma: no cover
     try:
         schema = UpdateDocumentInput()
         document = schema.load(request.json)
@@ -90,7 +90,7 @@ def update(id):
 
 
 @bp.route('/documents/<id>', methods=['DELETE'])
-def delete(id):
+def delete(id):  # pragma: no cover
     try:
         document = Documents.objects.get(id=id)
         document.delete()

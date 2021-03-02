@@ -1,7 +1,7 @@
 import json
 import os
 
-from app.test.controllers.auth.test_setup_auth import DefaultSetup
+from app.test.integration.controllers.auth.test_setup_auth import DefaultSetup
 from app.utils.auth.token import generate_confirmation_token
 
 

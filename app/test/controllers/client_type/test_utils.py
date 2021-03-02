@@ -18,7 +18,7 @@ class TestCase(UtilsSetup):
 
     def test_post_roles(self):
         payload = {'type': 'test1', 'description': 'test case'}
-        res = self.app_client.post('/roles', data=payload)
+        res = self.app_client.post('/roles', json=payload)
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)

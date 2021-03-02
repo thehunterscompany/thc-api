@@ -4,7 +4,7 @@ import json
 
 
 class ContentTypeMiddleware(object):
-    def __init__(self, app):
+    def __init__(self, app):  # pragma: no cover
         self.app = app
 
     def __call__(self, environ, start_response):

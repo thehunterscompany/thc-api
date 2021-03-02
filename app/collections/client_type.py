@@ -1,15 +1,13 @@
-import mongoengine as me
+from mongoengine import StringField, ListField, ReferenceField, NULLIFY, Document
+from ..utils import RefQuerySet, parser_one_object, override_result
+from .documents import Documents
 
-from app.collections.documents import Documents
 
+class ClientTypes(Document):
+    employment_type = StringField(unique=True, required=True)
+    documents = ListField(ReferenceField(Documents, reverse_delete_rule=NULLIFY, null=True))
 
-class ClientTypes(me.Document):
-    employment_type = me.StringField(unique=True, required=True)
-    documents = me.ListField(me.ReferenceField(Documents, reverse_delete_rule=me.NULLIFY, null=True))
+    meta = {'queryset_class': RefQuerySet}
 
-    def format(self):
-        return {
-            'employment_type': self.employment_type,
-            'documents': self.documents
-        }
-
+    def to_json(self):
+       return override_result(self)

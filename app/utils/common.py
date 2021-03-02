@@ -3,7 +3,7 @@ from flask import abort, request
 response = lambda result='': {'result': result}
 
 
-def rewrite_abort(code, error):
+def rewrite_abort(code, error):  # pragma: no cover
     abort(code, {'message': str(error)})
 
 

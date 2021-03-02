@@ -1,4 +1,4 @@
-def update_or_create(model, criteria, values):
+def update_or_create(model, criteria, values):  # pragma: no cover
     query = model.objects(**criteria).first()
 
     if query:

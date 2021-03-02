@@ -2,7 +2,7 @@ from flask import jsonify
 from .common import response
 
 
-def error_handler(app):
+def error_handler(app):  # pragma: no cover
     @app.errorhandler(400)
     def bad_request(e):
         return __get_message(e, 'Bad request', 400)

@@ -10,4 +10,4 @@ class ClientTypes(Document):
     meta = {'queryset_class': RefQuerySet}
 
     def to_json(self):
-       return override_result(self)
+        return override_result(self)

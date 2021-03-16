@@ -36,17 +36,13 @@ def register():  # pragma: no cover
     new_user_instance = None
 
     try:
+        # User
         request.json['password'] = encrypt_data(request.json, 'password')
         request.json['role_type'] = Roles.objects.get(type=request.json['role_type'])
         client_instance = SaveClientInput().load(request.json, unknown='EXCLUDE')
         new_user_instance = Clients(**client_instance).save()
 
-    except NotUniqueError as err:
-        rewrite_abort(422, err)
-    except Exception as err:
-        rewrite_abort(400, err)
-
-    try:
+        # Profiles
         for profile in request.json['profiles']:
             profile['client_type'] = ClientTypes.objects.get(employment_type=profile['client_type'])
             profile['client'] = new_user_instance
@@ -55,20 +51,7 @@ def register():  # pragma: no cover
         for i in range(len(profiles)):
             profiles[i] = Profiles(**profiles[i]).save()
 
-    except ValidationError as err:
-        new_user_instance.delete()
-
-        rewrite_abort(400, err)
-    except NotUniqueError as err:
-        new_user_instance.delete()
-
-        rewrite_abort(422, err)
-    except Exception as err:
-        new_user_instance.delete()
-        rewrite_abort(500, err)
-
-    # Credit Line
-    try:
+        # Credit Line
         schema = SaveCreditLineInput()
         request.json['credit_line']['client'] = new_user_instance
         credit_line = schema.load(request.json['credit_line'], unknown='EXCLUDE')
@@ -76,8 +59,12 @@ def register():  # pragma: no cover
 
     except ValidationError as err:
         new_user_instance.delete()
-
         rewrite_abort(400, err)
+
+    except NotUniqueError as err:
+        new_user_instance.delete()
+        rewrite_abort(422, err)
+
     except Exception as err:
         new_user_instance.delete()
         rewrite_abort(500, err)
@@ -145,8 +132,8 @@ def login():  # pragma: no cover
         user = Users.objects(email=request.json['email']).first()
         if user is None:
             raise AuthError({'code': 'Not Found',
-                                     'description': 'User was not'
-                                                    ' found in our database'
+                             'description': 'User was not'
+                                            ' found in our database'
                              }, 404)
     except AuthError as err:
         rewrite_abort(err.status_code, err.error['description'])

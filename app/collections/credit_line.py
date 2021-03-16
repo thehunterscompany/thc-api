@@ -9,12 +9,4 @@ class CreditLines(me.Document):
     financing_time = me.StringField(required=True)
     client = me.ReferenceField('Clients', required=True)
 
-    def format(self):
-        return {
-            'budget': self.budget,
-            'initial_payment': self.initial_payment,
-            'financing_value': self.financing_value,
-            'credit_line_type': self.credit_line_type,
-            'financing_time': self.financing_time,
-        }
 

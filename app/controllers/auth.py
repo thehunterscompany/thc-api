@@ -135,20 +135,18 @@ def login():  # pragma: no cover
                              'description': 'User was not'
                                             ' found in our database'
                              }, 404)
-    except AuthError as err:
-        rewrite_abort(err.status_code, err.error['description'])
 
-    else:
-        if user.verified:
-            try:
+        else:
+            if user.verified:
                 if request.json['password'] == decrypt_data(user.password):
                     return response(generate_jwt(user))
                 else:
                     raise AuthError({'code': 'Unauthorized',
-                                     'description': 'Your password is incorrect!'
+                                    'description': 'Your password is incorrect!'
                                      }, 401)
-            except AuthError as err:
-                rewrite_abort(err.status_code, err.error['description'])
-        else:
-            err = 'User has not confirm registration! Please check email.'
-            rewrite_abort(403, err)
+            else:
+                err = 'User has not confirm registration! Please check email.'
+                rewrite_abort(403, err)
+
+    except AuthError as err:
+        rewrite_abort(err.status_code, err.error['description'])

@@ -1,6 +1,5 @@
 import mongoengine as me
 
-from app.collections.client import Clients
 from app.collections.client_type import ClientTypes
 
 

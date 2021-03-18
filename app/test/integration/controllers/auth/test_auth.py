@@ -40,22 +40,7 @@ class AuthTestCase(DefaultSetup):
         payload = {"email": "ajzpiv97@gmail.com",
                    "password": "12345",
                    "role_type": "client",
-                   "profiles": [
-                       {
-                           "name": "Armando",
-                           "last_name": "Zubillaga",
-                           "age": 25,
-                           "personal_id": "1111",
-                           "income": "12314423",
-                           "client_type": "employee"
-
-                       }],
-                   "number_owners": 1,
-                   "credit_line": {"budget": "124324",
-                                   "initial_payment": "41234123423",
-                                   "financing_value": "14324123413242314",
-                                   "credit_line_type": "leasing",
-                                   "financing_time": "1232"},
+                   "referred_by_non_related": "me",
                    }
         self.app_client.post('/register', json=payload)
         token = generate_confirmation_token(payload['email'])
@@ -67,30 +52,6 @@ class AuthTestCase(DefaultSetup):
         payload = {"email": "ajzpiv97@gmail.com",
                    "password": "12345",
                    "role_type": "client",
-                   "profiles": [
-                       {
-                           "name": "Armando",
-                           "last_name": "Zubillaga",
-                           "age": 25,
-                           "personal_id": "1111",
-                           "income": "12314423",
-                           "client_type": "employee"
-
-                       },
-                       {
-                           "name": "Jose",
-                           "last_name": "Prado",
-                           "age": 29,
-                           "personal_id": "115411",
-                           "income": "12314423",
-                           "client_type": "employee"
-                       }],
-                   "number_owners": 2,
-                   "credit_line": {"budget": "124324",
-                                   "initial_payment": "41234123423",
-                                   "financing_value": "14324123413242314",
-                                   "credit_line_type": "leasing",
-                                   "financing_time": "1232"},
                    }
 
         res = self.app_client.post('/register', json=payload)
@@ -101,29 +62,6 @@ class AuthTestCase(DefaultSetup):
         # Missing value
         payload = {"email": "ajzpiv98@gmail.com",
                    "password": "12345",
-                   "profiles": [
-                       {
-                           "name": "Armando",
-                           "last_name": "Zubillaga",
-                           "age": 25,
-                           "income": "12314423",
-                           "client_type": "employee"
-
-                       },
-                       {
-                           "name": "Jose",
-                           "last_name": "Prado",
-                           "age": 29,
-                           "personal_id": "11524654611",
-                           "income": "12314423",
-                           "client_type": "employee"
-                       }],
-                   "number_owners": 2,
-                   "credit_line": {"budget": "124324",
-                                   "initial_payment": "41234123423",
-                                   "financing_value": "14324123413242314",
-                                   "credit_line_type": "leasing",
-                                   "financing_time": "1232"},
                    }
 
         res = self.app_client.post('/register', json=payload)
@@ -138,30 +76,6 @@ class AuthTestCase(DefaultSetup):
         payload = {"email": "ajzpiv97@gmail.com",
                    "password": "12345",
                    "role_type": "client",
-                   "profiles": [
-                       {
-                           "name": "Armando",
-                           "last_name": "Zubillaga",
-                           "age": 25,
-                           "personal_id": "1111",
-                           "income": "12314423",
-                           "client_type": "employee"
-
-                       },
-                       {
-                           "name": "Jose",
-                           "last_name": "Prado",
-                           "age": 29,
-                           "personal_id": "115411",
-                           "income": "12314423",
-                           "client_type": "employee"
-                       }],
-                   "number_owners": 2,
-                   "credit_line": {"budget": "124324",
-                                   "initial_payment": "41234123423",
-                                   "financing_value": "14324123413242314",
-                                   "credit_line_type": "leasing",
-                                   "financing_time": "1232"},
                    "verified": True
                    }
         self.app_client.post('/register', json=payload)
@@ -186,30 +100,6 @@ class AuthTestCase(DefaultSetup):
         payload = {"email": "ajzpiv97@gmail.com",
                    "password": "12345",
                    "role_type": "client",
-                   "profiles": [
-                       {
-                           "name": "Armando",
-                           "last_name": "Zubillaga",
-                           "age": 25,
-                           "personal_id": "1111",
-                           "income": "12314423",
-                           "client_type": "employee"
-
-                       },
-                       {
-                           "name": "Jose",
-                           "last_name": "Prado",
-                           "age": 29,
-                           "personal_id": "115411",
-                           "income": "12314423",
-                           "client_type": "employee"
-                       }],
-                   "number_owners": 2,
-                   "credit_line": {"budget": "124324",
-                                   "initial_payment": "41234123423",
-                                   "financing_value": "14324123413242314",
-                                   "credit_line_type": "leasing",
-                                   "financing_time": "1232"},
                    }
         self.app_client.post('/register', json=payload)
 

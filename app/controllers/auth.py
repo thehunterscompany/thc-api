@@ -31,31 +31,26 @@ def register():  # pragma: no cover
     """
     Register User
     """
-    profiles = []
-    credit_line_instance = None
     new_user_instance = None
 
     try:
         # User
-        request.json['password'] = encrypt_data(request.json, 'password')
-        request.json['role_type'] = Roles.objects.get(type=request.json['role_type'])
-        client_instance = SaveClientInput().load(request.json, unknown='EXCLUDE')
-        new_user_instance = Clients(**client_instance).save()
+        new_user_data = {'email': request.json['email'],
+                         'password': request.json['password'],
+                         'role_type': request.json['role_type'],
+                         'verified': request.json['verified'] if request.json.get('verified') else False}
 
-        # Profiles
-        for profile in request.json['profiles']:
-            profile['client_type'] = ClientTypes.objects.get(employment_type=profile['client_type'])
-            profile['client'] = new_user_instance
-            profiles.append(profile)
-        profiles = SaveProfileInput(many=True).load(profiles, unknown='EXCLUDE')
-        for i in range(len(profiles)):
-            profiles[i] = Profiles(**profiles[i]).save()
+        request.json['user'] = new_user_data
 
-        # Credit Line
-        schema = SaveCreditLineInput()
-        request.json['credit_line']['client'] = new_user_instance
-        credit_line = schema.load(request.json['credit_line'], unknown='EXCLUDE')
-        credit_line_instance = CreditLines(**credit_line).save()
+        new_user = SaveClientInput().load(request.json, unknown='EXCLUDE')
+        new_user['user']['password'] = encrypt_data(new_user['user'], 'password')
+        new_user['user']['role_type'] = Roles.objects.get(type=new_user_data['role_type'])
+
+        new_user_instance = Users(**new_user['user']).save()
+
+        # Client
+        new_user['user'] = new_user_instance
+        Clients(**new_user).save()
 
     except ValidationError as err:
         new_user_instance.delete()
@@ -142,7 +137,7 @@ def login():  # pragma: no cover
                     return response(generate_jwt(user))
                 else:
                     raise AuthError({'code': 'Unauthorized',
-                                    'description': 'Your password is incorrect!'
+                                     'description': 'Your password is incorrect!'
                                      }, 401)
             else:
                 err = 'User has not confirm registration! Please check email.'

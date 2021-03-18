@@ -52,9 +52,13 @@ def register():  # pragma: no cover
         new_user['user'] = new_user_instance
         Clients(**new_user).save()
 
-    except ValidationError as err:
-        new_user_instance.delete()
-        rewrite_abort(400, err)
+    except (ValidationError, KeyError) as err:
+        try:
+            new_user_instance.delete()
+        except AttributeError:
+            pass
+        finally:
+            rewrite_abort(400, err)
 
     except NotUniqueError as err:
         new_user_instance.delete()

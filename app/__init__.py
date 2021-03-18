@@ -46,5 +46,6 @@ def create_app(testing=False):
     Profiles.register_delete_rule(Clients, 'profiles', NULLIFY)
     Clients.register_delete_rule(CreditLines, 'client', CASCADE)
     Clients.register_delete_rule(Profiles, 'client', CASCADE)
+    Clients.register_delete_rule(Clients, 'referred_by_client', NULLIFY)
 
     return app

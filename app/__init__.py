@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 from mongoengine import connect, NULLIFY, CASCADE
 from .collections.client import Clients
 from .collections.credit_line import CreditLines
@@ -25,6 +26,19 @@ def create_app(testing=False):
         setup_db(db_name=TEST_DATABASE_NAME)
     else:
         setup_db()
+
+    CORS(app, resources={r"/*": {"origins": "*"}})
+
+    # CORS Headers
+    @app.after_request
+    def after_request(response):
+        response.headers.add(
+            'Access-Control-Allow-Headers',
+            'Content-Type,Authorization,true')
+        response.headers.add(
+            'Access-Control-Allow-Methods',
+            'GET,PUT,POST,DELETE,OPTIONS')
+        return response
 
     @app.route('/')
     def welcome():

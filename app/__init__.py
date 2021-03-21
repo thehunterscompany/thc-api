@@ -27,14 +27,17 @@ def create_app(testing=False):
     else:
         setup_db()
 
-    CORS(app, resources={r"/*": {"origins": "*"}},
-         supports_credentials=True
-         )
+    CORS(app, resources={r"/*": {"origins": "*"}})
 
+    # CORS Headers
     @app.after_request
-    def add_headers(response):
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+    def after_request(response):
+        response.headers.add(
+            'Access-Control-Allow-Headers',
+            'Content-Type,Authorization')
+        response.headers.add(
+            'Access-Control-Allow-Methods',
+            'GET,PUT,POST,DELETE,OPTIONS')
         return response
 
     @app.route('/')

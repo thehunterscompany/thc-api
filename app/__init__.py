@@ -10,7 +10,6 @@ from .utils.error_handler import error_handler
 from .middlewares import ContentTypeMiddleware
 from .utils.setup_logger import init_logger
 
-
 def setup_db(db_name=DATABASE_NAME):
     connect(db_name, host=DATABASE_HOST, port=DATABASE_PORT)
 
@@ -19,6 +18,7 @@ def create_app(testing=False):
     init_logger()
     app = Flask(__name__, instance_relative_config=True)
 
+    CORS(app, resources=r'/*')
     setup_email(app)
 
     if testing:
@@ -26,19 +26,6 @@ def create_app(testing=False):
         setup_db(db_name=TEST_DATABASE_NAME)
     else:
         setup_db()
-
-    CORS(app, resources={r"/*": {"origins": "*"}})
-
-    # CORS Headers
-    @app.after_request
-    def after_request(response):
-        response.headers.add(
-            'Access-Control-Allow-Headers',
-            'Content-Type,Authorization')
-        response.headers.add(
-            'Access-Control-Allow-Methods',
-            'GET,PUT,POST,DELETE,OPTIONS')
-        return response
 
     @app.route('/')
     def welcome():
@@ -48,7 +35,7 @@ def create_app(testing=False):
 
     from .controllers import auth, document, role, client_type
 
-    app.wsgi_app = ContentTypeMiddleware(app.wsgi_app)
+    # app.wsgi_app = ContentTypeMiddleware(app.wsgi_app)
 
     app.register_blueprint(auth.bp)
     app.register_blueprint(document.bp)

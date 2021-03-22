@@ -12,7 +12,7 @@ class DefaultSetup(SetupTestDB, unittest.TestCase):
         roles_col = cls.test_db["roles"]
         roles_data = [{"type": "admin", "description": ""},
                       {"type": "client", "description": ""},
-                      {"type": "real estate", "description": ""}]
+                      {"type": "real-estate", "description": ""}]
 
         for data in roles_data:
             roles_col.insert_one(data)

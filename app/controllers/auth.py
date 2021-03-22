@@ -11,6 +11,7 @@ from app.collections.user import Users
 from app.schemas.client_schema import SaveClientInput
 from app.schemas.credit_line_schema import SaveCreditLineInput
 from app.schemas.profile_schema import SaveProfileInput
+from app.schemas.user_schema import SaveUserInput
 from app.utils import response, rewrite_abort, parser_one_object
 from app.utils.auth.password_jwt import *
 from app.utils.auth.token import generate_confirmation_token, confirm_token
@@ -37,20 +38,23 @@ def register():  # pragma: no cover
         # User
         new_user_data = {'email': request.json['email'],
                          'password': request.json['password'],
-                         'role_type': request.json['role_type'],
-                         'verified': request.json['verified'] if request.json.get('verified') else False}
+                         'role_type': request.json['roleType'],
+                         'verified': request.json['verified'] if request.json.get('verified') else False
+                         }
 
-        request.json['user'] = new_user_data
+        new_user = SaveUserInput().load(new_user_data)
+        new_user['password'] = encrypt_data(new_user, 'password')
+        new_user['role_type'] = Roles.objects.get(type=new_user['role_type'])
+        new_user_instance = Users(**new_user).save()
 
-        new_user = SaveClientInput().load(request.json, unknown='EXCLUDE')
-        new_user['user']['password'] = encrypt_data(new_user['user'], 'password')
-        new_user['user']['role_type'] = Roles.objects.get(type=new_user_data['role_type'])
+        if 'client' in new_user_instance.role_type.type:
+            client_data = {'user': new_user_instance, 'referred_by_non_related': request.json['referred_by_non_related']
+                           if request.json.get('referred_by_non_related') else 'N/A',
+                           'referred_by_client': request.json['referred_by_client']
+                           if request.json.get('referred_by_client') else 'N/A'}
 
-        new_user_instance = Users(**new_user['user']).save()
-
-        # Client
-        new_user['user'] = new_user_instance
-        Clients(**new_user).save()
+            new_client = SaveClientInput().load(client_data)
+            Clients(**new_client).save()
 
     except (ValidationError, KeyError) as err:
         try:
@@ -61,12 +65,20 @@ def register():  # pragma: no cover
             rewrite_abort(400, err)
 
     except NotUniqueError as err:
-        new_user_instance.delete()
-        rewrite_abort(422, err)
+        try:
+            new_user_instance.delete()
+        except AttributeError:
+            pass
+        finally:
+            rewrite_abort(422, err)
 
     except Exception as err:
-        new_user_instance.delete()
-        rewrite_abort(500, err)
+        try:
+            new_user_instance.delete()
+        except AttributeError:
+            pass
+        finally:
+            rewrite_abort(500, err)
 
     try:
         token = generate_confirmation_token(new_user_instance.email)

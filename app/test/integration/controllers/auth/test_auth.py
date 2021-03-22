@@ -20,7 +20,7 @@ class AuthTestCase(DefaultSetup):
         self.app_client.application.config["MAIL_DEFAULT_SENDER"] = 'ajzpiv97@gmail.com'
         payload = {"email": "ajzpiv97@gmail.com",
                    "password": "12345",
-                   "role_type": "client",
+                   "roleType": "client",
                    "referred_by_non_related": "me",
                    "verified": True
                    }

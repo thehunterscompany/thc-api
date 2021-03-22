@@ -11,8 +11,6 @@ class ContentTypeMiddleware(object):
         request = Request(environ)
         headers = request.headers
 
-        if request.method == 'GET':
-            return self.app(environ, start_response)
         if 'Content-Type' in headers:
             if 'application/json' in headers['Content-Type']:
                 return self.app(environ, start_response)

@@ -10,6 +10,7 @@ from .utils.error_handler import error_handler
 from .middlewares import ContentTypeMiddleware
 from .utils.setup_logger import init_logger
 
+
 def setup_db(db_name=DATABASE_NAME):
     connect(db_name, host=DATABASE_HOST, port=DATABASE_PORT)
 

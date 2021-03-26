@@ -47,7 +47,7 @@ def register():  # pragma: no cover
         new_user['role_type'] = Roles.objects.get(type=new_user['role_type'])
         new_user_instance = Users(**new_user).save()
 
-        if 'client' in new_user_instance.role_type.type:
+        if 'Cliente' in new_user_instance.role_type.type:
             client_data = {'user': new_user_instance, 'referred_by_non_related': request.json['referred_by_non_related']
                            if request.json.get('referred_by_non_related') else 'N/A',
                            'referred_by_client': request.json['referred_by_client']
@@ -143,8 +143,8 @@ def login():  # pragma: no cover
         user = Users.objects(email=request.json['email']).first()
         if user is None:
             raise AuthError({'code': 'Not Found',
-                             'description': 'User was not'
-                                            ' found in our database'
+                             'description': 'Este usuario no fue encontrado'
+                                            ' en nuestros sistemas!'
                              }, 404)
 
         else:
@@ -153,10 +153,11 @@ def login():  # pragma: no cover
                     return response(generate_jwt(user))
                 else:
                     raise AuthError({'code': 'Unauthorized',
-                                     'description': 'Your password is incorrect!'
+                                     'description': 'Tu contraseña es incorrecta.'
                                      }, 401)
             else:
-                err = 'User has not confirm registration! Please check email.'
+                err = 'Usted no ha confirmado su cuenta. Por favor revise su correo electronico ' \
+                      'y haga click en el link que le enviamos.'
                 rewrite_abort(403, err)
 
     except AuthError as err:

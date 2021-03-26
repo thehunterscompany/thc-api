@@ -13,7 +13,7 @@ def generate_confirmation_token(email: str) -> URLSafeTimedSerializer:
     return serializer.dumps(email, salt=os.getenv('SECURITY_PASSWORD_SALT'))
 
 
-def confirm_token(token, expiration=4000) -> str:
+def confirm_token(token, expiration=86400) -> str:
     """
 
     :param token:
